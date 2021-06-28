@@ -1,19 +1,23 @@
 import {createAsyncThunk, createSlice, PayloadAction, Slice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { API_KEY, cruise } from "../config/constants";
-import { Cruise, Link } from "../config/Types";
+import {API_KEY, cruise, cruiseDescRus, cruiseError} from "../config/constants";
+import {Cruise, DescTable, Link} from "../config/types";
 import { RootState } from "./store";
 
 export type CruiseState = {
+    id: string;
     cruise: Cruise;
     isLoading: boolean,
     error: Error | null;
+    table: DescTable[];
 }
 
 const initialState: CruiseState = {
+    id:'',
     cruise: <Cruise>{},
     isLoading: true,
-    error: null
+    error: null,
+    table: []
 }
 
 export const getCruise = createAsyncThunk<any, Link>(
@@ -25,10 +29,11 @@ export const getCruise = createAsyncThunk<any, Link>(
                     key: API_KEY,
                 }
             });
-            console.log('link: ' + link.url + ',' + link.id)
+            // console.log('link: ' + link.url + link.id + API_KEY);
             return response.data;
         } catch (error) {
             setCruiseError(error);
+            // setIsLoading(false);
         }
     }
 );
@@ -37,8 +42,16 @@ export const cruiseSlice: Slice = createSlice({
     name: cruise,
     initialState,
     reducers: {
+        setId: (state,action: PayloadAction<string>)=> {
+            state.id = action.payload;
+        },
+        setCruise: (state, action: PayloadAction<Cruise>) =>{
+            if (action.payload) {
+                state.cruise = action.payload;
+            }
+        },
         setCruiseError: (state, action: PayloadAction<Error>) => {
-            state.error = action.payload.message;
+            state.error = action.payload;
         },
         handleCruiseError: (state) => {
             state.error = null;
@@ -52,9 +65,15 @@ export const cruiseSlice: Slice = createSlice({
             .addCase(getCruise.pending, (state) => {
                 state.isLoading = true;
             })
+            .addCase(getCruise.rejected, (state) => {
+                state.isLoading = false;
+                state.error = cruiseError;
+            })
             .addCase(getCruise.fulfilled, (state, action: PayloadAction<Cruise>) => {
                 if (action.payload) {
                     state.cruise = action.payload;
+                } else {
+                    state.error = cruiseError;
                 }
                 state.isLoading = false;
             });
@@ -62,6 +81,6 @@ export const cruiseSlice: Slice = createSlice({
 
 });
 
-export const {setCruiseError, setIsLoading, handleCruiseError} = cruiseSlice.actions;
+export const {setCruiseError, setIsLoading, handleCruiseError, setCruise, setTable, setId} = cruiseSlice.actions;
 export const selectCruise = (state: RootState) => state.cruise;
 export default cruiseSlice.reducer;

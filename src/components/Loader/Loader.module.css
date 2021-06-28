@@ -1,0 +1,28 @@
+.loader {
+    display: block;
+    width: 20vh;
+    height: 20vh;
+    margin: 10vh auto;
+}
+
+.loader:after {
+    content: " ";
+    display: block;
+    width: 16vh;
+    height: 16vh;
+    margin: 1vw auto;
+    border-radius: 50%;
+    border: 10px solid #0d206b;
+    border-color: #201898 transparent #2f6ed0 transparent;
+    animation: loader 1.2s linear infinite;
+}
+
+@keyframes loader {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+

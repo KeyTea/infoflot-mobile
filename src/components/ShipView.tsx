@@ -3,7 +3,7 @@ import React from "react";
 const ShipView: React.FC = () => {
     return (
         <div>
-            <h1>Ship</h1>
+            <h1>Теплоход</h1>
         </div>
     )
 }
