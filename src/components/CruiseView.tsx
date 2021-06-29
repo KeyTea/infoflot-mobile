@@ -5,11 +5,12 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {cruiseDescRus, cruiseUrl, cruiseJson, cruiseJson2} from "../config/constants";
 import Loader from "./Loader/Loader";
 import {Table} from "react-bootstrap";
-import TimetableView from "./TimetableView";
 import ControlledCarousel from "./ControlledCarousel";
 import { useParams } from "react-router-dom";
 import Booking from "./Booking";
 import ReactHtmlParser from 'react-html-parser';
+import MouseOverPopover from "./MouseOverPopover";
+import GetDate from "./GetDate";
 
 
 export type Props = {
@@ -24,11 +25,12 @@ const CruiseView: React.FC = () => {
 
     useEffect(() => {
         dispatch(getCruise({url: cruiseUrl, id: id}));
+        //two lines below for debugging and testing without using database instead of line above
+        // dispatch(setCruise(cruiseJson2));
+        // dispatch(setIsLoading(false));
         const dateStart: Date = new Date(cruise.cruise.dateStart);
         const endStart: Date = new Date(cruise.cruise.dateEnd);
         console.log("DATE: " + dateStart.getUTCDate() + " " + dateStart.getMonth());
-        // dispatch(setCruise(cruiseJson2));
-        // dispatch(setIsLoading(false));
     }, []);
 
 
@@ -39,7 +41,7 @@ const CruiseView: React.FC = () => {
         return (
             <div>
                 {cruise.cruise.photos === null ? <h1>Круиз {cruise.cruise?.name}</h1> : <ControlledCarousel/>}
-                <Table style={{ width: '100%'}} striped hover>
+                <Table style={{ width: '100%', textAlign: 'left'}} striped hover>
                     <tbody>
                         <tr>
                             <td>{headers[0]}</td>
@@ -64,11 +66,13 @@ const CruiseView: React.FC = () => {
                         </tr>
                         <tr>
                             <td>{headers[5]}</td>
-                            <td>{cruise.cruise.dateStart}</td>
+                            {/*<td>{cruise.cruise.dateStart}</td>*/}
+                            <td><GetDate dateStr={cruise.cruise.dateStart}/></td>
                         </tr>
                         <tr>
                             <td>{headers[6]}</td>
-                            <td>{cruise.cruise.dateEnd}</td>
+                            {/*<td>{cruise.cruise.dateEnd}</td>*/}
+                            <td><GetDate dateStr={cruise.cruise.dateEnd}/></td>
                         </tr>
                         <tr>
                             <td>{headers[7]}</td>
@@ -76,13 +80,13 @@ const CruiseView: React.FC = () => {
                         </tr>
                         <tr>
                             <td>{headers[8]}</td>
-                            <td><a href={cruise.cruise.timetablePdf}>Расписание</a></td>
+                            <td><a href={cruise.cruise?.timetablePdf}>Расписание круиза</a></td>
                         </tr>
                         <tr style={{background: 'white'}}>
                             <td>{headers[9]}</td>
                             <td>
                                 {cruise.cruise.sug?.map((s: Suggestion,i: number) =>
-                                        <img width="50px" key={i} src={s.icon}/>
+                                    <MouseOverPopover key={i} preview={s.icon} previewType='img' description={s.descr}/>
                                     )}
                             </td>
                         </tr>

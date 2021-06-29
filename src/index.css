@@ -82,3 +82,8 @@ input{
 /*  pointer-events: none;*/
 /*  font-size: small;*/
 /*}*/
+
+.appPopover {
+  display: inline-flex;
+  font-size: xx-small;
+}
